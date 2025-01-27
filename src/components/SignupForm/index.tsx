@@ -173,16 +173,24 @@ const SignupForm = () => {
                   }
                 }}
                 sx={{
-                  borderRadius: "10px",
-                  padding: "10px",
+                  "& .MuiInputBase-root": {
+                    borderRadius: "10px",
+                    backgroundColor: errors.email ? "#FDEFEE" : "#FFF",
+                  },
                   "& .MuiOutlinedInput-root": {
+                    borderRadius: "10px",
+                    backgroundColor: errors.email ? "#FDEFEE" : "#FFF",
+                  },
+                  "& .MuiOutlinedInput-input": {
+                    borderRadius: "10px",
+                    padding: "10px",
                     backgroundColor: errors.email ? "#FDEFEE" : "#FFF",
                     borderColor: errors.email ? "#FF8080" : "#FFF",
                     color: errors.email ? "#FF8080" : "#4A4E71",
                   },
                   "& .MuiOutlinedInput-notchedOutline": {
                     borderColor: errors.email
-                      ? "#f44336"
+                      ? "#FDEFEE"
                       : "rgba(0, 0, 0, 0.23)",
                   },
                   "&:hover .MuiOutlinedInput-notchedOutline": {
