@@ -112,168 +112,212 @@ const SignupForm = () => {
   };
 
   return (
-    <Box
-      component="form"
-      onSubmit={handleSubmit(onSubmit)}
-      sx={{ width: 400, margin: "0 auto", mt: 5 }}
-    >
-      {alert && <Alert severity={alert.type}>{alert.message}</Alert>}
-      <Controller
-        name="email"
-        control={control}
-        defaultValue=""
-        rules={{
-          required: "Email is required",
-          validate: (value) => validateEmail(value) || "Invalid email format",
+    <>
+      <Box
+        component="form"
+        onSubmit={handleSubmit(onSubmit)}
+        sx={{
+          width: 315,
+          margin: "0 auto",
+          display: "flex",
+          flexDirection: "column",
+          gap: 5,
+          alignItems: "center",
         }}
-        render={({ field }) => (
-          <TextField
-            {...field}
-            label="Email"
-            fullWidth
-            margin="normal"
-            error={!!errors.email || !!emailError}
-            helperText={errors.email?.message || emailError}
-            onChange={(e) => {
-              field.onChange(e);
-              clearErrors("email");
-              setEmailError(null);
-              if (typingTimer) clearTimeout(typingTimer);
-              setTypingTimer(
-                setTimeout(() => {
-                  if (!validateEmail(e.target.value)) {
+      >
+        <Typography
+          variant="h1"
+          sx={{
+            fontSize: "28px",
+            lineHeight: "28px",
+            fontWeight: "700",
+            textAlign: "center",
+          }}
+        >
+          Sign up
+        </Typography>
+        <Box sx={{ width: "100%" }}>
+          <Controller
+            name="email"
+            control={control}
+            defaultValue=""
+            rules={{
+              required: "Email is required",
+              validate: (value) =>
+                validateEmail(value) || "Invalid email format",
+            }}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Email"
+                fullWidth
+                margin="normal"
+                error={!!errors.email || !!emailError}
+                helperText={errors.email?.message || emailError}
+                onChange={(e) => {
+                  field.onChange(e);
+                  clearErrors("email");
+                  setEmailError(null);
+                  if (typingTimer) clearTimeout(typingTimer);
+                  setTypingTimer(
+                    setTimeout(() => {
+                      if (!validateEmail(e.target.value)) {
+                        setEmailError("Invalid email format");
+                      }
+                    }, 2000)
+                  );
+                }}
+                onBlur={() => {
+                  if (!validateEmail(field.value)) {
                     setEmailError("Invalid email format");
                   }
-                }, 2000)
-              );
-            }}
-            onBlur={() => {
-              if (!validateEmail(field.value)) {
-                setEmailError("Invalid email format");
-              }
-            }}
+                }}
+                sx={{
+                  borderRadius: "10px",
+                  "&.MuiInputBase": {
+                    backgroundColor: errors.email ? "red" : "#FFF",
+                  },
+                }}
+              />
+            )}
           />
-        )}
-      />
-      <Controller
-        name="password"
-        control={control}
-        defaultValue=""
-        rules={{
-          required: "Password is required",
-          validate: () => {
-            return Object.values(passwordCriteria).every(Boolean);
-          },
-        }}
-        render={({ field }) => (
-          <Box>
-            <TextField
-              {...field}
-              type="password"
-              label="Password"
-              fullWidth
-              margin="normal"
-              error={!!errors.password}
-              helperText={
-                <>
-                  {errors.password?.message && (
-                    <Typography color={"red"}>
-                      {errors.password.message}
-                    </Typography>
-                  )}
-                  {showPasswordCriteria && (
+          <Controller
+            name="password"
+            control={control}
+            defaultValue=""
+            rules={{
+              required: "Password is required",
+              validate: () => {
+                return Object.values(passwordCriteria).every(Boolean);
+              },
+            }}
+            render={({ field }) => (
+              <Box>
+                <TextField
+                  {...field}
+                  type="password"
+                  label="Password"
+                  fullWidth
+                  margin="normal"
+                  error={!!errors.password}
+                  helperText={
                     <>
-                      <Typography
-                        color={
-                          passwordCriteria.length
-                            ? "green"
-                            : errors.password && !passwordCriteria.length
-                            ? "red"
-                            : "black"
-                        }
-                      >
-                        Must be at least 8 characters
-                      </Typography>
-                      <Typography
-                        color={
-                          passwordCriteria.maxLength
-                            ? "green"
-                            : errors.password && !passwordCriteria.maxLength
-                            ? "red"
-                            : "black"
-                        }
-                      >
-                        Must be no more than 64 characters
-                      </Typography>
-                      <Typography
-                        color={
-                          passwordCriteria.noSpaces
-                            ? "green"
-                            : errors.password && !passwordCriteria.noSpaces
-                            ? "red"
-                            : "black"
-                        }
-                      >
-                        Must not contain spaces
-                      </Typography>
-                      <Typography
-                        color={
-                          passwordCriteria.uppercaseLowercase
-                            ? "green"
-                            : errors.password &&
-                              !passwordCriteria.uppercaseLowercase
-                            ? "red"
-                            : "black"
-                        }
-                      >
-                        Must contain uppercase and lowercase letters
-                      </Typography>
-                      <Typography
-                        color={
-                          passwordCriteria.digit
-                            ? "green"
-                            : errors.password && !passwordCriteria.digit
-                            ? "red"
-                            : "black"
-                        }
-                      >
-                        Must contain at least 1 digit
-                      </Typography>
+                      {errors.password?.message && (
+                        <Typography color={"red"}>
+                          {errors.password.message}
+                        </Typography>
+                      )}
+                      {showPasswordCriteria && (
+                        <>
+                          <Typography
+                            color={
+                              passwordCriteria.length
+                                ? "green"
+                                : errors.password && !passwordCriteria.length
+                                ? "red"
+                                : "black"
+                            }
+                          >
+                            Must be at least 8 characters
+                          </Typography>
+                          <Typography
+                            color={
+                              passwordCriteria.maxLength
+                                ? "green"
+                                : errors.password && !passwordCriteria.maxLength
+                                ? "red"
+                                : "black"
+                            }
+                          >
+                            Must be no more than 64 characters
+                          </Typography>
+                          <Typography
+                            color={
+                              passwordCriteria.noSpaces
+                                ? "green"
+                                : errors.password && !passwordCriteria.noSpaces
+                                ? "red"
+                                : "black"
+                            }
+                          >
+                            Must not contain spaces
+                          </Typography>
+                          <Typography
+                            color={
+                              passwordCriteria.uppercaseLowercase
+                                ? "green"
+                                : errors.password &&
+                                  !passwordCriteria.uppercaseLowercase
+                                ? "red"
+                                : "black"
+                            }
+                          >
+                            Must contain uppercase and lowercase letters
+                          </Typography>
+                          <Typography
+                            color={
+                              passwordCriteria.digit
+                                ? "green"
+                                : errors.password && !passwordCriteria.digit
+                                ? "red"
+                                : "black"
+                            }
+                          >
+                            Must contain at least 1 digit
+                          </Typography>
+                        </>
+                      )}
                     </>
-                  )}
-                </>
-              }
-              onFocus={() => setShowPasswordCriteria(true)}
-              onBlur={(field) => {
-                if (
-                  field.target.value === "" ||
-                  errors.password?.type === "validate"
-                ) {
-                  setShowPasswordCriteria(true);
-                }
-              }}
-              onChange={(e) => {
-                field.onChange(e);
-                clearErrors("password");
-                const criteria = validatePassword(e.target.value);
-                setPasswordCriteria(criteria);
-                setShowPasswordCriteria(true);
-              }}
-            />
-          </Box>
-        )}
-      />
-      <Button
-        type="submit"
-        variant="contained"
-        color="primary"
-        fullWidth
-        sx={{ mt: 3 }}
-        disabled={!!emailError && !errors.password}
-      >
-        Sign Up
-      </Button>
-    </Box>
+                  }
+                  onFocus={() => setShowPasswordCriteria(true)}
+                  onBlur={(field) => {
+                    if (
+                      field.target.value === "" ||
+                      errors.password?.type === "validate"
+                    ) {
+                      setShowPasswordCriteria(true);
+                    }
+                  }}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    clearErrors("password");
+                    const criteria = validatePassword(e.target.value);
+                    setPasswordCriteria(criteria);
+                    setShowPasswordCriteria(true);
+                  }}
+                />
+              </Box>
+            )}
+          />
+        </Box>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          fullWidth
+          sx={{
+            width: "240px",
+            height: "48px",
+            background:
+              "linear-gradient(110.46deg, #70C3FF 12.27%, #4B65FF 93.92%)",
+            padding: "15px 32px 15px 32px",
+            borderRadius: "30px",
+          }}
+          disabled={!!emailError && !errors.password}
+        >
+          Sign Up
+        </Button>
+      </Box>
+      {alert && (
+        <Alert
+          sx={{ position: "absolute", top: 0, right: 0 }}
+          severity={alert.type}
+          onClose={() => setAlert(null)}
+        >
+          {alert.message}
+        </Alert>
+      )}
+    </>
   );
 };
 
