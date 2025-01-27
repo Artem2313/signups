@@ -149,7 +149,7 @@ const SignupForm = () => {
             render={({ field }) => (
               <TextField
                 {...field}
-                label="Email"
+                placeholder="Email"
                 fullWidth
                 margin="normal"
                 error={!!errors.email || !!emailError}
@@ -174,8 +174,21 @@ const SignupForm = () => {
                 }}
                 sx={{
                   borderRadius: "10px",
-                  "&.MuiInputBase": {
-                    backgroundColor: errors.email ? "red" : "#FFF",
+                  padding: "10px",
+                  "& .MuiOutlinedInput-root": {
+                    backgroundColor: errors.email ? "#FDEFEE" : "#FFF",
+                    borderColor: errors.email ? "#FF8080" : "#FFF",
+                    color: errors.email ? "#FF8080" : "#4A4E71",
+                  },
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: errors.email
+                      ? "#f44336"
+                      : "rgba(0, 0, 0, 0.23)",
+                  },
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: errors.email
+                      ? "#d32f2f"
+                      : "rgba(0, 0, 0, 0.87)",
                   },
                 }}
               />
@@ -196,7 +209,7 @@ const SignupForm = () => {
                 <TextField
                   {...field}
                   type="password"
-                  label="Password"
+                  placeholder="Password"
                   fullWidth
                   margin="normal"
                   error={!!errors.password}
