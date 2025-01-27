@@ -60,6 +60,8 @@ const SignupForm = () => {
   const [emailError, setEmailError] = useState<string | null>(null);
   const [passwordCriteria, setPasswordCriteria] = useState({
     length: false,
+    maxLength: false,
+    noSpaces: false,
     uppercaseLowercase: false,
     digit: false,
   });
@@ -78,7 +80,9 @@ const SignupForm = () => {
 
   const validatePassword = (password: string) => {
     return {
-      length: password.length >= 8 && !password.includes(" "),
+      length: password.length >= 8,
+      maxLength: password.length <= 64,
+      noSpaces: !password.includes(" "),
       uppercaseLowercase: /[a-z]/.test(password) && /[A-Z]/.test(password),
       digit: /\d/.test(password),
     };
@@ -192,6 +196,28 @@ const SignupForm = () => {
                       </Typography>
                       <Typography
                         color={
+                          passwordCriteria.maxLength
+                            ? "green"
+                            : errors.password && !passwordCriteria.maxLength
+                            ? "red"
+                            : "black"
+                        }
+                      >
+                        Must be no more than 64 characters
+                      </Typography>
+                      <Typography
+                        color={
+                          passwordCriteria.noSpaces
+                            ? "green"
+                            : errors.password && !passwordCriteria.noSpaces
+                            ? "red"
+                            : "black"
+                        }
+                      >
+                        Must not contain spaces
+                      </Typography>
+                      <Typography
+                        color={
                           passwordCriteria.uppercaseLowercase
                             ? "green"
                             : errors.password &&
@@ -218,8 +244,13 @@ const SignupForm = () => {
                 </>
               }
               onFocus={() => setShowPasswordCriteria(true)}
-              onBlur={() => {
-                setShowPasswordCriteria(false);
+              onBlur={(field) => {
+                if (
+                  field.target.value === "" ||
+                  errors.password?.type === "validate"
+                ) {
+                  setShowPasswordCriteria(true);
+                }
               }}
               onChange={(e) => {
                 field.onChange(e);
