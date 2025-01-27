@@ -63,6 +63,7 @@ const SignupForm = () => {
     uppercaseLowercase: false,
     digit: false,
   });
+  const [showPasswordCriteria, setShowPasswordCriteria] = useState(false);
   const [alert, setAlert] = useState<{
     type: "error" | "success";
     message: string;
@@ -97,6 +98,7 @@ const SignupForm = () => {
           }
           if (error.errors.password) {
             setError("password", { message: error.errors.password });
+            setShowPasswordCriteria(true);
           }
         }
       } else {
@@ -153,7 +155,12 @@ const SignupForm = () => {
         name="password"
         control={control}
         defaultValue=""
-        rules={{ required: "Password is required" }}
+        rules={{
+          required: "Password is required",
+          validate: () => {
+            return Object.values(passwordCriteria).every(Boolean);
+          },
+        }}
         render={({ field }) => (
           <Box>
             <TextField
@@ -163,31 +170,65 @@ const SignupForm = () => {
               fullWidth
               margin="normal"
               error={!!errors.password}
-              helperText={errors.password?.message}
-              onFocus={(e) => {
-                const criteria = validatePassword(e.target.value);
-                setPasswordCriteria(criteria);
+              helperText={
+                <>
+                  {errors.password?.message && (
+                    <Typography color={"red"}>
+                      {errors.password.message}
+                    </Typography>
+                  )}
+                  {showPasswordCriteria && (
+                    <>
+                      <Typography
+                        color={
+                          passwordCriteria.length
+                            ? "green"
+                            : errors.password && !passwordCriteria.length
+                            ? "red"
+                            : "black"
+                        }
+                      >
+                        Must be at least 8 characters
+                      </Typography>
+                      <Typography
+                        color={
+                          passwordCriteria.uppercaseLowercase
+                            ? "green"
+                            : errors.password &&
+                              !passwordCriteria.uppercaseLowercase
+                            ? "red"
+                            : "black"
+                        }
+                      >
+                        Must contain uppercase and lowercase letters
+                      </Typography>
+                      <Typography
+                        color={
+                          passwordCriteria.digit
+                            ? "green"
+                            : errors.password && !passwordCriteria.digit
+                            ? "red"
+                            : "black"
+                        }
+                      >
+                        Must contain at least 1 digit
+                      </Typography>
+                    </>
+                  )}
+                </>
+              }
+              onFocus={() => setShowPasswordCriteria(true)}
+              onBlur={() => {
+                setShowPasswordCriteria(false);
               }}
               onChange={(e) => {
                 field.onChange(e);
                 clearErrors("password");
                 const criteria = validatePassword(e.target.value);
                 setPasswordCriteria(criteria);
+                setShowPasswordCriteria(true);
               }}
             />
-            <Box sx={{ ml: 1, mt: 1 }}>
-              <Typography color={passwordCriteria.length ? "green" : "black"}>
-                Must be at least 8 characters
-              </Typography>
-              <Typography
-                color={passwordCriteria.uppercaseLowercase ? "green" : "black"}
-              >
-                Must contain uppercase and lowercase letters
-              </Typography>
-              <Typography color={passwordCriteria.digit ? "green" : "black"}>
-                Must contain at least 1 digit
-              </Typography>
-            </Box>
           </Box>
         )}
       />
@@ -197,9 +238,7 @@ const SignupForm = () => {
         color="primary"
         fullWidth
         sx={{ mt: 3 }}
-        disabled={
-          !!emailError || !Object.values(passwordCriteria).every(Boolean)
-        }
+        disabled={!!emailError && !errors.password}
       >
         Sign Up
       </Button>
