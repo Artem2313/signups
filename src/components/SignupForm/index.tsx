@@ -55,9 +55,9 @@ const SignupForm = () => {
     formState: { errors },
     setError,
     clearErrors,
+    getValues,
   } = useForm<FormData>();
 
-  const [emailError, setEmailError] = useState<string | null>(null);
   const [passwordCriteria, setPasswordCriteria] = useState({
     length: false,
     maxLength: false,
@@ -154,35 +154,33 @@ const SignupForm = () => {
                 placeholder="Email"
                 fullWidth
                 margin="normal"
-                error={!!errors.email || !!emailError}
-                helperText={errors.email?.message || emailError}
+                error={!!errors.email}
+                helperText={errors.email?.message}
                 onChange={(e) => {
                   field.onChange(e);
                   clearErrors("email");
-                  setEmailError(null);
                   if (typingTimer) clearTimeout(typingTimer);
                   setTypingTimer(
                     setTimeout(() => {
                       if (!validateEmail(e.target.value)) {
-                        setEmailError("Invalid email format");
+                        setError("email", { message: "Invalid email format" });
                       }
                     }, 2000)
                   );
                 }}
                 onBlur={() => {
                   if (!validateEmail(field.value)) {
-                    setEmailError("Invalid email format");
+                    setError("email", { message: "Invalid email format" });
                   }
                 }}
                 sx={{
                   "& .MuiInputBase-root": {
                     borderRadius: "10px",
-                    backgroundColor:
-                      errors.email || emailError
-                        ? "#FDEFEE"
-                        : isSuccess
-                        ? "#E8F5E9"
-                        : "#FFF",
+                    backgroundColor: errors.email
+                      ? "#FDEFEE"
+                      : isSuccess
+                      ? "#E8F5E9"
+                      : "#FFF",
                   },
                   "& .MuiOutlinedInput-root": {
                     borderRadius: "10px",
@@ -194,37 +192,33 @@ const SignupForm = () => {
                     },
                   },
                   "& .MuiOutlinedInput-notchedOutline": {
-                    borderColor:
-                      errors.email || emailError
-                        ? "#FF8080"
-                        : isSuccess
-                        ? "#4CAF50"
-                        : "transparent",
+                    borderColor: errors.email
+                      ? "#FF8080"
+                      : isSuccess
+                      ? "#4CAF50"
+                      : "transparent",
                   },
                   "& .MuiOutlinedInput-input": {
                     padding: "10px",
-                    color:
-                      errors.email || emailError
-                        ? "#FF8080"
-                        : isSuccess
-                        ? "#4CAF50"
-                        : "#000",
+                    color: errors.email
+                      ? "#FF8080"
+                      : isSuccess
+                      ? "#4CAF50"
+                      : "#000",
                   },
                   "& .MuiInputLabel-root": {
-                    color:
-                      errors.email || emailError
-                        ? "#FF8080"
-                        : isSuccess
-                        ? "#4CAF50"
-                        : "#A9A9A9",
+                    color: errors.email
+                      ? "#FF8080"
+                      : isSuccess
+                      ? "#4CAF50"
+                      : "#A9A9A9",
                   },
                   "& .MuiInputLabel-root.Mui-focused": {
-                    color:
-                      errors.email || emailError
-                        ? "#FF8080"
-                        : isSuccess
-                        ? "#4CAF50"
-                        : "#000",
+                    color: errors.email
+                      ? "#FF8080"
+                      : isSuccess
+                      ? "#4CAF50"
+                      : "#000",
                   },
                 }}
               />
@@ -237,7 +231,8 @@ const SignupForm = () => {
             rules={{
               required: "Password is required",
               validate: () => {
-                return Object.values(passwordCriteria).every(Boolean);
+                const criteria = validatePassword(getValues("password"));
+                return Object.values(criteria).every(Boolean);
               },
             }}
             render={({ field }) => (
@@ -326,7 +321,6 @@ const SignupForm = () => {
                   }}
                   onChange={(e) => {
                     field.onChange(e);
-                    clearErrors("password");
                     const criteria = validatePassword(e.target.value);
                     setPasswordCriteria(criteria);
                     setShowPasswordCriteria(true);
@@ -398,7 +392,7 @@ const SignupForm = () => {
             borderRadius: "30px",
             textTransform: "none",
           }}
-          disabled={!!emailError && !errors.password}
+          disabled={!!errors.email && !errors.password}
         >
           Sign Up
         </Button>
