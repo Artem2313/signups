@@ -173,6 +173,19 @@ const SignupForm = () => {
                     setError("email", { message: "Invalid email format" });
                   }
                 }}
+                onFocus={(e) => {
+                  if (!typingTimer && e.target.value === "") {
+                    setTypingTimer(
+                      setTimeout(() => {
+                        if (!validateEmail(e.target.value)) {
+                          setError("email", {
+                            message: "Invalid email format",
+                          });
+                        }
+                      }, 2000)
+                    );
+                  }
+                }}
                 sx={{
                   "& .MuiInputBase-root": {
                     borderRadius: "10px",
