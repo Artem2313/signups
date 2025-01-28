@@ -70,8 +70,8 @@ const SignupForm = () => {
     type: "error" | "success";
     message: string;
   } | null>(null);
-
   const [typingTimer, setTypingTimer] = useState<NodeJS.Timeout | null>(null);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -91,8 +91,10 @@ const SignupForm = () => {
   const onSubmit = async (data: FormData) => {
     try {
       setAlert(null);
+      setIsSuccess(false);
       const response = await mockBackend(data);
       setAlert({ type: "success", message: response.message });
+      setIsSuccess(true);
     } catch (error) {
       if (isErrorResponse(error)) {
         setAlert({ type: "error", message: error.message });
@@ -175,28 +177,54 @@ const SignupForm = () => {
                 sx={{
                   "& .MuiInputBase-root": {
                     borderRadius: "10px",
-                    backgroundColor: errors.email ? "#FDEFEE" : "#FFF",
+                    backgroundColor:
+                      errors.email || emailError
+                        ? "#FDEFEE"
+                        : isSuccess
+                        ? "#E8F5E9"
+                        : "#FFF",
                   },
                   "& .MuiOutlinedInput-root": {
                     borderRadius: "10px",
-                    backgroundColor: errors.email ? "#FDEFEE" : "#FFF",
-                  },
-                  "& .MuiOutlinedInput-input": {
-                    borderRadius: "10px",
-                    padding: "10px",
-                    backgroundColor: errors.email ? "#FDEFEE" : "#FFF",
-                    borderColor: errors.email ? "#FF8080" : "#FFF",
-                    color: errors.email ? "#FF8080" : "#4A4E71",
+                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#000",
+                    },
+                    "&.Mui-error .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#FF8080",
+                    },
                   },
                   "& .MuiOutlinedInput-notchedOutline": {
-                    borderColor: errors.email
-                      ? "#FDEFEE"
-                      : "rgba(0, 0, 0, 0.23)",
+                    borderColor:
+                      errors.email || emailError
+                        ? "#FF8080"
+                        : isSuccess
+                        ? "#4CAF50"
+                        : "transparent",
                   },
-                  "&:hover .MuiOutlinedInput-notchedOutline": {
-                    borderColor: errors.email
-                      ? "#d32f2f"
-                      : "rgba(0, 0, 0, 0.87)",
+                  "& .MuiOutlinedInput-input": {
+                    padding: "10px",
+                    color:
+                      errors.email || emailError
+                        ? "#FF8080"
+                        : isSuccess
+                        ? "#4CAF50"
+                        : "#000",
+                  },
+                  "& .MuiInputLabel-root": {
+                    color:
+                      errors.email || emailError
+                        ? "#FF8080"
+                        : isSuccess
+                        ? "#4CAF50"
+                        : "#A9A9A9",
+                  },
+                  "& .MuiInputLabel-root.Mui-focused": {
+                    color:
+                      errors.email || emailError
+                        ? "#FF8080"
+                        : isSuccess
+                        ? "#4CAF50"
+                        : "#000",
                   },
                 }}
               />
@@ -292,11 +320,8 @@ const SignupForm = () => {
                   }
                   onFocus={() => setShowPasswordCriteria(true)}
                   onBlur={(field) => {
-                    if (
-                      field.target.value === "" ||
-                      errors.password?.type === "validate"
-                    ) {
-                      setShowPasswordCriteria(true);
+                    if (field.target.value === "") {
+                      setShowPasswordCriteria(false);
                     }
                   }}
                   onChange={(e) => {
@@ -305,6 +330,54 @@ const SignupForm = () => {
                     const criteria = validatePassword(e.target.value);
                     setPasswordCriteria(criteria);
                     setShowPasswordCriteria(true);
+                  }}
+                  sx={{
+                    "& .MuiInputBase-root": {
+                      borderRadius: "10px",
+                      backgroundColor: errors.password
+                        ? "#FDEFEE"
+                        : isSuccess
+                        ? "#E8F5E9"
+                        : "#FFF",
+                    },
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "10px",
+                      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#000",
+                      },
+                      "&.Mui-error .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#FF8080",
+                      },
+                    },
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: errors.password
+                        ? "#FF8080"
+                        : isSuccess
+                        ? "#4CAF50"
+                        : "transparent",
+                    },
+                    "& .MuiOutlinedInput-input": {
+                      padding: "10px",
+                      color: errors.password
+                        ? "#FF8080"
+                        : isSuccess
+                        ? "#4CAF50"
+                        : "#000",
+                    },
+                    "& .MuiInputLabel-root": {
+                      color: errors.password
+                        ? "#FF8080"
+                        : isSuccess
+                        ? "#4CAF50"
+                        : "#A9A9A9",
+                    },
+                    "& .MuiInputLabel-root.Mui-focused": {
+                      color: errors.password
+                        ? "#FF8080"
+                        : isSuccess
+                        ? "#4CAF50"
+                        : "#000",
+                    },
                   }}
                 />
               </Box>
@@ -323,6 +396,7 @@ const SignupForm = () => {
               "linear-gradient(110.46deg, #70C3FF 12.27%, #4B65FF 93.92%)",
             padding: "15px 32px 15px 32px",
             borderRadius: "30px",
+            textTransform: "none",
           }}
           disabled={!!emailError && !errors.password}
         >
